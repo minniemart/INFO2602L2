@@ -1,3 +1,4 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql.expression import func 
 from werkzeug.security import generate_password_hash
@@ -25,27 +26,21 @@ class User(db.Model):
       return f'<User {self.id} {self.username} - {self.email}>'
 
 
-  def add_todo_category(self, tod
-      todo = Todo.query.filter_by(id=todo_id, user_id=self.id).first()
+def add_todo_category(self, todo_id, category_text):
+    todo = Todo.query.filter_by(id=todo_id, user_id=self.id).first()
+    if not todo:
+        return False
      
-      if not todo:
-          return False
-
-     
-      category = Category.query.filter_by(text=category_text, user_id=self.id).first()
-      if not category:
-  
-          category = Category(user_id=self.id, text=category_text)
-          db.session.add(category)
-          db.session.commit()
-
-      
-      if category not in todo.categories:
-          todo.categories.append(category)
-          db.session.add(todo)
-          db.session.commit()
-
-      return True
+    category = Category.query.filter_by(text=category_text, user_id=self.id).first()
+    if not category:
+        category = Category(user_id=self.id, text=category_text)
+        db.session.add(category)
+        db.session.commit()
+    if category not in todo.categories:
+        todo.categories.append(category)
+        db.session.add(todo)
+        db.session.commit()
+    return True
 
 class Todo(db.Model):
   id = db.Column(db.Integer, primary_key=True)
